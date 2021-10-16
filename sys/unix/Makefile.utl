@@ -100,7 +100,7 @@ LFLAGS =
 #
 # note that we cannot simply build the binaries and run them
 # as the size of structs and stuffs would mismatch
-UTIL_CFLAGS = --pre-js ../win/web/mount_nodefs.js 
+UTIL_CFLAGS = --pre-js ../win/web/mount_nodefs.js -lnodefs.js
 
 LIBS =
  

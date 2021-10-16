@@ -1,7 +1,7 @@
 /* vim: set sw=2 ts=2 et ft=javascript */
 // Copyright (c) 2015 Lu Wang <coolwanglu@gmail.com>
 var LibraryNetHack = {
-  $nethack__deps: ['$EmterpreterAsync'],
+  $nethack__deps: [],
   $nethack: {
     // Macros from NetHack source code
     // window types
@@ -55,7 +55,8 @@ var LibraryNetHack = {
 
       // mount and load the save dir
       try { FS.mkdir('/nethack/save'); } catch(e) { }
-      if(window.parent.kongregate) {
+      //if(window.parent.kongregate) {
+      if(true) {
         // in kongregate we cannot use IDBFS
         if(typeof localStorage !== 'undefined') {
           var savedata = {};
@@ -100,10 +101,10 @@ var LibraryNetHack = {
 
       // load tilenames
       nethack.tilenames = [];
-      Browser.asyncLoad('tilenames.json', function(u8_array) {
-        try {
-          nethack.tilenames = JSON.parse(UTF8ArrayToString(u8_array, 0));
-        } catch(e) { }
+      fetch('tilenames.json')
+      .then(response => response.json())
+      .then(data => {
+        nethack.tilenames = data;
       });
 
       // show warning on exit
@@ -402,7 +403,7 @@ var LibraryNetHack = {
 
     show_menu_window: function(items, title, how, selected_pp, resume_callback) {
       var menu_items = [];
-      var save_menu_selection = function() {
+      var save_menu_selection = () => {
         var selections = [];
         menu_items.forEach(function(item) {
           if(item.classList.contains('active')) {
@@ -411,10 +412,11 @@ var LibraryNetHack = {
             selections.push(id);
           }
         });
+        console.log(JSON.stringify(selections));
         menu_items = [];
 
         // allocate memory inside emterpreter resume !
-        resume_callback(function() {
+        resume_callback(() => {
           if(selections.length > 0) {
             var selected_p = _malloc(selections.length * 8); // sizeof(MENU_ITEM_P) == 8
             for(var i = 0; i < selections.length; ++i) {
@@ -1058,7 +1060,7 @@ var LibraryNetHack = {
   },
 
   Web_askname_helper: function(buf, len) {
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
+    return Asyncify.handleSleep((wakeUp) => {
       var labels = [
         'Who are you? ',
         'What is your name? ',
@@ -1067,12 +1069,12 @@ var LibraryNetHack = {
       nethack.get_line({
         label: labels[Math.floor(Math.random() * labels.length)],
         default_text: nethack.ui_preferences.player_name || '',
-        callback: function(value) {
+        callback: (value) => {
           value = value || 'Unnamed Player';
           nethack.ui_preferences.player_name = value;
           nethack.save_ui_preferences();
-          writeStringToMemory(value, buf); // TODO: check length
-          emterpreter_resume();
+          stringToUTF8(value, buf); // TODO: check length
+          wakeUp();
         }
       });
     });
@@ -1104,7 +1106,7 @@ var LibraryNetHack = {
 
   BrowserHack_report: function(str, value) {
     if(window.parent.kongregate)
-      window.parent.kongregate.stats.submit(Pointer_stringify(str), value);
+      window.parent.kongregate.stats.submit(UTF8ToString(str), value);
   },
 
   Web_create_nhwindow: function(type) {
@@ -1160,7 +1162,7 @@ var LibraryNetHack = {
   },
 
   Web_display_nhwindow: function(win, blocking) {
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
+    return Asyncify.handleSleep((emterpreter_resume) => {
       if(blocking) nethack.update_status();
       var async = false;
       win = nethack.windows[win];
@@ -1229,7 +1231,7 @@ var LibraryNetHack = {
   },
 
   Web_putstr: function(win, attr, str) {
-    str = Pointer_stringify(str);
+    str = UTF8ToString(str);
     win = nethack.windows[win];
     assert(win);
     switch(win.type) {
@@ -1254,8 +1256,8 @@ var LibraryNetHack = {
   },
 
   Web_display_file: function(str, complain) {
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
-      fn = Pointer_stringify(str);
+    return Asyncify.handleSleep(function(emterpreter_resume) {
+      fn = UTF8ToString(str);
       var data = '';
       try {
         data = FS.readFile(fn, { encoding: 'utf8' });
@@ -1286,7 +1288,7 @@ var LibraryNetHack = {
       accelerator: accelerator,
       groupacc: groupacc,
       attr: attr,
-      str: Pointer_stringify(str),
+      str: UTF8ToString(str),
       preselected: preselected
     });
   },
@@ -1294,11 +1296,11 @@ var LibraryNetHack = {
   Web_end_menu: function(win, prmpt) {
     win = nethack.windows[win];
     assert(win);
-    win.menu_prompt = Pointer_stringify(prmpt);
+    win.menu_prompt = UTF8ToString(prmpt);
   },
 
   Web_select_menu: function(win, how, selected_pp) {
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
+    return Asyncify.handleSleep(function(emterpreter_resume) {
       if(how != nethack.PICK_NONE) nethack.update_status();
       var async = false;
       win = nethack.windows[win];
@@ -1355,7 +1357,7 @@ var LibraryNetHack = {
   },
 
   Web_nhgetch_helper: function() { 
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
+    return Asyncify.handleSleep(function(emterpreter_resume) {
       nethack.update_status();
       // for keyboard events we enable the animation on the map
       nethack.enable_map_smooth_scrolling();
@@ -1374,7 +1376,7 @@ var LibraryNetHack = {
     });
   },
   Web_nh_poskey_helper: function(x, y, mod) {
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
+    return Asyncify.handleSleep(function(emterpreter_resume) {
       nethack.update_status();
       if(nethack.keybuffer.length > 0) {
         nethack.enable_map_smooth_scrolling();
@@ -1418,10 +1420,10 @@ var LibraryNetHack = {
   },
 
   Web_yn_function_helper: function(ques, choices, def) {
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
+    return Asyncify.handleSleep(function(emterpreter_resume) {
       nethack.update_status();
-      ques = Pointer_stringify(ques);
-      choices = Pointer_stringify(choices);   
+      ques = UTF8ToString(ques);
+      choices = UTF8ToString(choices);   
       def = String.fromCharCode(def & 0xff);
 
       var i = choices.indexOf(String.fromCharCode(27)); //ESC
@@ -1475,12 +1477,12 @@ var LibraryNetHack = {
   },
 
   Web_getlin: function(quest, input) {
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
+    return Asyncify.handleSleep(function(emterpreter_resume) {
       nethack.update_status();
       nethack.get_line({
-        label: (Pointer_stringify(quest) || '') + ' ',
+        label: (UTF8ToString(quest) || '') + ' ',
         callback: function(value) {
-          writeStringToMemory(value || '', input); // TODO: check length
+          stringToUTF8(value || '', input); // TODO: check length
           emterpreter_resume();
         }
       });
@@ -1491,7 +1493,7 @@ var LibraryNetHack = {
     var ele = document.getElementById('browserhack-rip-text');
     ele.innerHTML = '';
     for(var i = 0; i < line_count; ++i) {
-      var str = Pointer_stringify({{{ makeGetValue('lines', 'i*4', 'i32'); }}});
+      var str = UTF8ToString({{{ makeGetValue('lines', 'i*4', 'i32'); }}});
       var cur_line = document.createElement('p');
       cur_line.textContent = str;
       ele.appendChild(cur_line);
@@ -1501,11 +1503,11 @@ var LibraryNetHack = {
   },
 
   Web_get_ext_cmd_helper: function(commands, command_count) {
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
+    return Asyncify.handleSleep(function(emterpreter_resume) {
       nethack.update_status();
       var ext_cmd_list = [];
       for(var i = 0; i < command_count; ++i) 
-        ext_cmd_list.push(Pointer_stringify({{{ makeGetValue('commands', 'i*4', 'i32'); }}}));
+        ext_cmd_list.push(UTF8ToString({{{ makeGetValue('commands', 'i*4', 'i32'); }}}));
 
       nethack.get_line({
         label: '#',
@@ -1523,7 +1525,7 @@ var LibraryNetHack = {
   },
 
   nethack_exit: function(status) {
-    return EmterpreterAsync.handle(function(emterpreter_resume) {
+    return Asyncify.handleSleep(function(emterpreter_resume) {
       nethack.map_win_overlay.classList.add('in');
       nethack.map_win_overlay.classList.add('exited');
       document.getElementById('browserhack-replay-btn').focus();

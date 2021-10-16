@@ -152,7 +152,13 @@ GNOMEINC=-I/usr/lib/glib/include -I/usr/lib/gnome-libs/include -I../win/gnome
 # CFLAGS = -g -I../include
 
 CFLAGS = -O3 -I../include
-LFLAGS = 
+LFLAGS = \
+					-O3 \
+					-Oz \
+					--memory-init-file 1 \
+					--js-library ../win/web/nethack_lib.js \
+					--preload-file nethack \
+    			-s ASYNCIFY=1
 
 # The Qt and Be window systems are written in C++, while the rest of
 # NetHack is standard C.  If using Qt, uncomment the LINK line here to get
@@ -293,7 +299,7 @@ WINLIB = $(WINWEBLIB)
 LIBS =
 
 # make NetHack
-GAME     = nethack
+GAME     = browserhack.js
 # GAME     = nethack.prg
 
 # if you defined RANDOM in unixconf.h/tosconf.h since your system did not come
@@ -477,7 +483,7 @@ qt_win.moc: ../include/qt_win.h
 qttableview.moc: ../include/qttableview.h
 	$(QTDIR)/bin/moc -o qttableview.moc ../include/qttableview.h
 
-$(MAKEDEFS): ../util/makedefs.c  $(CONFIG_H) ../include/permonst.h \
+$(MAKEDEFS): $(FIRSTOBJ) ../util/makedefs.c  $(CONFIG_H) ../include/permonst.h \
 		../include/objclass.h ../include/monsym.h \
 		../include/artilist.h ../include/dungeon.h ../include/obj.h \
 		../include/monst.h ../include/you.h ../include/flag.h \
