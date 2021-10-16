@@ -84,6 +84,7 @@ static long laststattime;
 void
 getmailstatus()
 {
+	return;
 	if(!mailbox && !(mailbox = nh_getenv("MAIL"))) {
 #  ifdef MAILPATH
 #   ifdef AMS
