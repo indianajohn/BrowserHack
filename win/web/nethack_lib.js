@@ -63,8 +63,7 @@ var LibraryNetHack = {
 
       // mount and load the save dir
       try { FS.mkdir('/nethack/save'); } catch(e) { }
-      //if(window.parent.kongregate) {
-      if(true) {
+      if(window.parent.kongregate) {
         // in kongregate we cannot use IDBFS
         if(typeof localStorage !== 'undefined') {
           var savedata = {};

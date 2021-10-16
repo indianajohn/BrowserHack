@@ -158,7 +158,7 @@ LFLAGS = \
 					--memory-init-file 1 \
 					--js-library ../win/web/nethack_lib.js \
 					--preload-file nethack \
-    			-s ASYNCIFY=1
+    			-s ASYNCIFY=1 -lidbfs.js
 
 # The Qt and Be window systems are written in C++, while the rest of
 # NetHack is standard C.  If using Qt, uncomment the LINK line here to get
