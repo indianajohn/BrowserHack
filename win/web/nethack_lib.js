@@ -28,6 +28,14 @@ var LibraryNetHack = {
     LS_UI_PREFERENCES: 'BrowserHack_UI_Preferences',
     LS_OPTIONS: 'BrowserHack_Options',
     LS_KONGREGATE_SAVE: 'BrowserHack_Kongregate_Save',
+    print: function(text) {
+      if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+      console.warn(text);
+    },
+    printErr: function(text) {
+      if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+      console.error(text);
+    },
 
     pre_run: function() { // thisois called before main()
       if(window.parent.kongregate) {
@@ -416,7 +424,6 @@ var LibraryNetHack = {
         menu_items = [];
 
         // allocate memory inside emterpreter resume !
-        resume_callback(() => {
           if(selections.length > 0) {
             var selected_p = _malloc(selections.length * 8); // sizeof(MENU_ITEM_P) == 8
             for(var i = 0; i < selections.length; ++i) {
@@ -430,9 +437,7 @@ var LibraryNetHack = {
           } else {
             {{{ makeSetValue('selected_pp', 0, '0', 'i32') }}};
           }
-
-          return selections.length;
-        });
+          resume_callback(selections.length);
       };
 
       // event handlers
@@ -549,7 +554,7 @@ var LibraryNetHack = {
           } 
         },
         onclose: function() { 
-          resume_callback(function() { return -1; });
+          resume_callback(-1);
         } 
       });
 
@@ -862,9 +867,7 @@ var LibraryNetHack = {
           nethack.input_area.classList.remove('in');
           var resume_callback = nethack.pending_yn_arg.resume_callback;
           nethack.pending_yn_arg = null;
-          resume_callback(function() {
-            return yn_result.charCodeAt(0);
-          });
+          resume_callback(yn_result.charCodeAt(0));
         }
       } else if (nethack.window_pending) { // text window etc
         // do nothing
@@ -1256,7 +1259,7 @@ var LibraryNetHack = {
   },
 
   Web_display_file: function(str, complain) {
-    return Asyncify.handleSleep(function(emterpreter_resume) {
+    return Asyncify.handleSleep((emterpreter_resume) => {
       fn = UTF8ToString(str);
       var data = '';
       try {
@@ -1300,7 +1303,7 @@ var LibraryNetHack = {
   },
 
   Web_select_menu: function(win, how, selected_pp) {
-    return Asyncify.handleSleep(function(emterpreter_resume) {
+    return Asyncify.handleSleep((emterpreter_resume) => {
       if(how != nethack.PICK_NONE) nethack.update_status();
       var async = false;
       win = nethack.windows[win];
@@ -1318,8 +1321,8 @@ var LibraryNetHack = {
         default:
           console.log(win.type, 'ERROR: select_menu called on a non-menu window');
       }
-      if(!async) setTimeout(function() {
-        emterpreter_resume(function() { return -1; });
+      if(!async) setTimeout(() => {
+        emterpreter_resume(-1);
       }, 1);
     });
   },
@@ -1357,32 +1360,32 @@ var LibraryNetHack = {
   },
 
   Web_nhgetch_helper: function() { 
-    return Asyncify.handleSleep(function(emterpreter_resume) {
+    return Asyncify.handleSleep((emterpreter_resume) => {
       nethack.update_status();
       // for keyboard events we enable the animation on the map
       nethack.enable_map_smooth_scrolling();
       if(nethack.keybuffer.length > 0) {
         var ch = nethack.keybuffer.pop(0); 
         setTimeout(function() {
-          emterpreter_resume(function() { return ch; });
+          emterpreter_resume(ch);
         }, 1);
       } else {
         assert(!nethack.keypress_callback);
         nethack.keypress_callback = function(code) {
           nethack.keypress_callback = null;
-          emterpreter_resume(function() { return code; });
+          emterpreter_resume(code);
         };
       }
     });
   },
   Web_nh_poskey_helper: function(x, y, mod) {
-    return Asyncify.handleSleep(function(emterpreter_resume) {
+    return Asyncify.handleSleep((emterpreter_resume) => {
       nethack.update_status();
       if(nethack.keybuffer.length > 0) {
         nethack.enable_map_smooth_scrolling();
         var ch = nethack.keybuffer.pop(0); 
         setTimeout(function() {
-          emterpreter_resume(function() { return ch; });
+          emterpreter_resume(ch);
         }, 1);
       } else if(nethack.mousebuffer.length > 0) {
         // for mouse events we disable the animation on the map
@@ -1392,7 +1395,7 @@ var LibraryNetHack = {
         {{{ makeSetValue('y', 0, 'e.y', 'i32') }}};
         {{{ makeSetValue('mod', 0, 'e.mod', 'i32') }}};
         setTimeout(function() {
-          emterpreter_resume(function() { return 0; });
+          emterpreter_resume(0);
         }, 1);
       } else {
         assert(!nethack.keypress_callback);
@@ -1401,18 +1404,16 @@ var LibraryNetHack = {
           nethack.keypress_callback = null;
           nethack.mouseclick_callback = null;
           nethack.enable_map_smooth_scrolling();
-          emterpreter_resume(function() { return code; });
+          emterpreter_resume(code);
         };
         nethack.mouseclick_callback = function(e) {
           nethack.keypress_callback = null;
           nethack.mouseclick_callback = null;
           nethack.disable_map_smooth_scrolling();
-          emterpreter_resume(function() { 
-            {{{ makeSetValue('x', 0, 'e.x', 'i32') }}};
-            {{{ makeSetValue('y', 0, 'e.y', 'i32') }}};
-            {{{ makeSetValue('mod', 0, 'e.mod', 'i32') }}};
-            return 0; 
-          });
+          {{{ makeSetValue('x', 0, 'e.x', 'i32') }}};
+          {{{ makeSetValue('y', 0, 'e.y', 'i32') }}};
+          {{{ makeSetValue('mod', 0, 'e.mod', 'i32') }}};
+          emterpreter_resume(0);
         };
       }
         
@@ -1420,7 +1421,7 @@ var LibraryNetHack = {
   },
 
   Web_yn_function_helper: function(ques, choices, def) {
-    return Asyncify.handleSleep(function(emterpreter_resume) {
+    return Asyncify.handleSleep((emterpreter_resume) => {
       nethack.update_status();
       ques = UTF8ToString(ques);
       choices = UTF8ToString(choices);   
@@ -1477,7 +1478,7 @@ var LibraryNetHack = {
   },
 
   Web_getlin: function(quest, input) {
-    return Asyncify.handleSleep(function(emterpreter_resume) {
+    return Asyncify.handleSleep((emterpreter_resume) => {
       nethack.update_status();
       nethack.get_line({
         label: (UTF8ToString(quest) || '') + ' ',
@@ -1503,7 +1504,7 @@ var LibraryNetHack = {
   },
 
   Web_get_ext_cmd_helper: function(commands, command_count) {
-    return Asyncify.handleSleep(function(emterpreter_resume) {
+    return Asyncify.handleSleep((emterpreter_resume) => {
       nethack.update_status();
       var ext_cmd_list = [];
       for(var i = 0; i < command_count; ++i) 
@@ -1518,25 +1519,23 @@ var LibraryNetHack = {
           if((cmd_idx == -1) && (value != ''))
             nethack.add_message(nethack.message_win, nethack.ATR_NONE, 'Unknown extended command: ' + value);
 
-          emterpreter_resume(function() { return cmd_idx; });
+          emterpreter_resume(cmd_idx);
         }
       });
     });
   },
 
   nethack_exit: function(status) {
-    return Asyncify.handleSleep(function(emterpreter_resume) {
+    return Asyncify.handleSleep((emterpreter_resume) => {
       nethack.map_win_overlay.classList.add('in');
       nethack.map_win_overlay.classList.add('exited');
       document.getElementById('browserhack-replay-btn').focus();
       // sync save/ again, for record and logfile
       FS.syncfs(function (err) { 
         if(err) console.log('Cannot sync FS, savegame may not work!'); 
-        emterpreter_resume(function() {
-          // emscripten_force_exit
-          Module['noExitRuntime'] = false;
-          Module['exit'](status);
-        });
+        Module['noExitRuntime'] = false;
+        //Module['exit'](status);
+        emterpreter_resume();
       });
     });
   },
