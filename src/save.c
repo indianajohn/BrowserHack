@@ -143,11 +143,14 @@ dosave0()
 	    if (fd > 0) {
 		(void) close(fd);
 		clear_nhwindow(WIN_MESSAGE);
+    // Overwrite old files without asking - for autosave
+    /*
 		There("seems to be an old save file.");
 		if (yn("Overwrite the old file?") == 'n') {
 		    compress(fq_save);
 		    return 0;
 		}
+    */
 	    }
 	}
 

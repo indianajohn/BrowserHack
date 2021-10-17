@@ -58,8 +58,15 @@ moveloop()
 
     u.uz0.dlevel = u.uz.dlevel;
     youmonst.movement = NORMAL_SPEED;	/* give the hero some movement points */
+    int until_next_autosave = 0;
 
     for(;;) {
+  if (until_next_autosave == 0) {
+    dosave0();
+    pline("Autosaving");
+    until_next_autosave = 100;
+  }
+  until_next_autosave--;
 	get_nh_event();
 #ifdef POSITIONBAR
 	do_positionbar();
