@@ -1023,44 +1023,47 @@ var LibraryNetHack = {
         y: y,
         mod: mod
       };
-      // Self
-      if (x == nethack.map_center_x && y == nethack.map_center_y) {
-        nethack.virtual_selection('.'.charCodeAt(0), e);
-        return;
-      }
-      // Cardinal directions
-      if (x == nethack.map_center_x - 1 && y == nethack.map_center_y) {
-        nethack.virtual_selection('h'.charCodeAt(0), e);
-        return;
-      }
-      if (x == nethack.map_center_x + 1 && y == nethack.map_center_y) {
-        nethack.virtual_selection('l'.charCodeAt(0), e);
-        return;
-      }
-      if (x == nethack.map_center_x && y == nethack.map_center_y - 1) {
-        nethack.virtual_selection('k'.charCodeAt(0), e);
-        return;
-      }
-      if (x == nethack.map_center_x && y == nethack.map_center_y + 1) {
-        nethack.virtual_selection('j'.charCodeAt(0), e);
-        return;
-      }
-      // Diagonals
-      if (x == nethack.map_center_x + 1 && y == nethack.map_center_y + 1) {
-        nethack.virtual_selection('n'.charCodeAt(0), e);
-        return;
-      }
-      if (x == nethack.map_center_x + 1 && y == nethack.map_center_y - 1) {
-        nethack.virtual_selection('u'.charCodeAt(0), e);
-        return;
-      }
-      if (x == nethack.map_center_x - 1 && y == nethack.map_center_y + 1) {
-        nethack.virtual_selection('b'.charCodeAt(0), e);
-        return;
-      }
-      if (x == nethack.map_center_x - 1 && y == nethack.map_center_y - 1) {
-        nethack.virtual_selection('y'.charCodeAt(0), e);
-        return;
+      // Parse squares as directional arguments.
+      if (nethack.pending_yn_arg) {
+        // Self
+        if (x == nethack.map_center_x && y == nethack.map_center_y) {
+          nethack.virtual_selection('.'.charCodeAt(0), e);
+          return;
+        }
+        // Cardinal directions
+        if (x == nethack.map_center_x - 1 && y == nethack.map_center_y) {
+          nethack.virtual_selection('h'.charCodeAt(0), e);
+          return;
+        }
+        if (x == nethack.map_center_x + 1 && y == nethack.map_center_y) {
+          nethack.virtual_selection('l'.charCodeAt(0), e);
+          return;
+        }
+        if (x == nethack.map_center_x && y == nethack.map_center_y - 1) {
+          nethack.virtual_selection('k'.charCodeAt(0), e);
+          return;
+        }
+        if (x == nethack.map_center_x && y == nethack.map_center_y + 1) {
+          nethack.virtual_selection('j'.charCodeAt(0), e);
+          return;
+        }
+        // Diagonals
+        if (x == nethack.map_center_x + 1 && y == nethack.map_center_y + 1) {
+          nethack.virtual_selection('n'.charCodeAt(0), e);
+          return;
+        }
+        if (x == nethack.map_center_x + 1 && y == nethack.map_center_y - 1) {
+          nethack.virtual_selection('u'.charCodeAt(0), e);
+          return;
+        }
+        if (x == nethack.map_center_x - 1 && y == nethack.map_center_y + 1) {
+          nethack.virtual_selection('b'.charCodeAt(0), e);
+          return;
+        }
+        if (x == nethack.map_center_x - 1 && y == nethack.map_center_y - 1) {
+          nethack.virtual_selection('y'.charCodeAt(0), e);
+          return;
+        }
       }
       e.preventDefault();
 
