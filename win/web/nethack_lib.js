@@ -665,6 +665,14 @@ var LibraryNetHack = {
 
       var tile = document.createElement('span');
       tile.className = 'tile';
+      var mouse_event_handler = (e) => {
+          e.preventDefault();
+          nethack.input_area.classList.remove('in');
+          var resume_callback = nethack.pending_yn_arg.resume_callback;
+          nethack.pending_yn_arg = null;
+          resume_callback(item.accelerator);
+      }
+      tile.addEventListener('click', mouse_event_handler);
       if(item.tile == -1) {
         ele.appendChild(tile);
         ele.classList.add('invisible');
@@ -799,6 +807,7 @@ var LibraryNetHack = {
     // input buffers
     nethack.keybuffer = [];
     nethack.mousebuffer = [];
+    nethack.ext_cmd = -1;
     nethack.window_pending = 0;
 
     // commonly used elements
@@ -1503,7 +1512,7 @@ var LibraryNetHack = {
   },
 
   Web_get_ext_cmd_helper: function(commands, command_count) {
-    return Asyncify.handleSleep((emterpreter_resume) => {
+    if (nethack.ext_cmd == -1) {
       nethack.update_status();
       var ext_cmd_list = [];
       for(var i = 0; i < command_count; ++i) 
@@ -1512,16 +1521,25 @@ var LibraryNetHack = {
       nethack.get_line({
         label: '#',
         candidates: ext_cmd_list,
-        callback: function(value) {
+        callback: (value) => {
           value = value || ''; // value could be null
           var cmd_idx = ext_cmd_list.indexOf(value);
-          if((cmd_idx == -1) && (value != ''))
+          if((cmd_idx == -1) && (value != '')) {
             nethack.add_message(nethack.message_win, nethack.ATR_NONE, 'Unknown extended command: ' + value);
-
-          emterpreter_resume(cmd_idx);
+          } else {
+            nethack.ext_cmd = cmd_idx;
+            if (nethack.keypress_callback) {
+              nethack.keypress_callback('#'.charCodeAt(0));
+            } else {
+              nethack.keybuffer.push('#'.charCodeAt(0));
+            }
+          }
         }
       });
-    });
+    } 
+    const result = nethack.ext_cmd;
+    nethack.ext_cmd = -1;
+    return result;
   },
 
   nethack_exit: function(status) {
