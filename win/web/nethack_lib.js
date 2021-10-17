@@ -688,14 +688,20 @@ var LibraryNetHack = {
     create_inventory_element: function(item) {
       var ele = document.createElement('span');
       ele.className = 'inventory-item';
-      if(/\((wielded( in other hand)?|in quiver|weapon in hands?|being worn|on (left|right) (hand|foreclaw|paw|pectoral fin))\)/.test(item.str)) 
-          ele.className += ' active'
+      const active = (/\((wielded( in other hand)?|in quiver|weapon in hands?|being worn|on (left|right) (hand|foreclaw|paw|pectoral fin))\)/.test(item.str));
+      if (active) {
+        ele.className += ' active'
+      }
 
       var tile = document.createElement('span');
       tile.className = 'tile';
       var mouse_event_handler = (e) => {
           const selected = [];
           const options = [];
+          nethack.add_action(options, 'd', "drop", () => {
+                nethack.virtual_keypress('d'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
           nethack.add_action(options, 't', "throw", () => {
                 nethack.virtual_keypress('t'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
@@ -708,6 +714,20 @@ var LibraryNetHack = {
                 nethack.virtual_keypress('z'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
+          nethack.add_action(options, 'r', "read", () => {
+                nethack.virtual_keypress('r'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+        if (active) {
+          nethack.add_action(options, 'R', "remove", () => {
+                nethack.virtual_keypress('R'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+          nethack.add_action(options, 'T', "take off", () => {
+                nethack.virtual_keypress('T'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+        } else {
           nethack.add_action(options, 'W', "wear", () => {
                 nethack.virtual_keypress('W'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
@@ -720,10 +740,7 @@ var LibraryNetHack = {
                 nethack.virtual_keypress('P'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
-          nethack.add_action(options, 'r', "read", () => {
-                nethack.virtual_keypress('r'.charCodeAt(0));
-                nethack.virtual_selection(item.accelerator, e);
-              });
+        }
         const dummy = 0;
         const selections = [];
           nethack.show_menu_window(options, "hey there buddy", nethack.PICK_ONE, dummy, () => {
