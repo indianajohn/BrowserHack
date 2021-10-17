@@ -689,6 +689,9 @@ var LibraryNetHack = {
       var ele = document.createElement('span');
       ele.className = 'inventory-item';
       const active = (/\((wielded( in other hand)?|in quiver|weapon in hands?|being worn|on (left|right) (hand|foreclaw|paw|pectoral fin))\)/.test(item.str));
+      const wand = (/wand/.test(item.str));
+      const quaffable = (/potion/.test(item.str));
+      const readable = (/scroll|book/.test(item.str));
       if (active) {
         ele.className += ' active'
       }
@@ -710,14 +713,24 @@ var LibraryNetHack = {
                 nethack.virtual_keypress('e'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
+        if (wand) {
           nethack.add_action(options, 'z', "zap", () => {
                 nethack.virtual_keypress('z'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
+        }
+        if (readable) {
           nethack.add_action(options, 'r', "read", () => {
                 nethack.virtual_keypress('r'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
+        }
+        if (quaffable) {
+          nethack.add_action(options, 'q', "quaff", () => {
+                nethack.virtual_keypress('q'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+        }
         if (active) {
           nethack.add_action(options, 'R', "remove", () => {
                 nethack.virtual_keypress('R'.charCodeAt(0));
