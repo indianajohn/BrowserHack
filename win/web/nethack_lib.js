@@ -1198,26 +1198,27 @@ var LibraryNetHack = {
   },
 
   Web_askname_helper: function(buf, len) {
-    return Asyncify.handleSleep((wakeUp) => {
-      var labels = [
-        'Who are you? ',
-        'What is your name? ',
-        'Enter your name: '
-      ];
-      nethack.get_line({
-        label: labels[Math.floor(Math.random() * labels.length)],
-        default_text: nethack.ui_preferences.player_name || '',
-        callback: (value) => {
-          value = value || 'Unnamed Player';
-          nethack.ui_preferences.player_name = value;
-          nethack.save_ui_preferences();
-          stringToUTF8(value, buf); // TODO: check length
-          wakeUp();
-        }
+    var labels = [
+      'Who are you? ',
+      'What is your name? ',
+      'Enter your name: '
+    ];
+    return Asyncify.handleAsync(async () => {
+      await new Promise((resolve) => {
+        nethack.get_line({
+          label: labels[Math.floor(Math.random() * labels.length)],
+          default_text: nethack.ui_preferences.player_name || '',
+          callback: (value) => {
+            value = value || 'Unnamed Player';
+            nethack.ui_preferences.player_name = value;
+            nethack.save_ui_preferences();
+            writeStringToMemory(value, buf); // TODO: check length
+            resolve();
+          }
+        });
       });
     });
   },
-
   BrowserHack_update_stats_helper: function(s_gold, s_level, s_turn, s_depth, s_armorclass, s_have_amulet, s_have_candelabrum, s_have_quest_artifact, s_quest_completed, s_entered_gehennom, s_killed_wizard) {
     if(!window.parent.kongregate) return;
     var stats = {
@@ -1612,15 +1613,17 @@ var LibraryNetHack = {
     });
   },
 
-  Web_getlin: function(quest, input) {
-    return Asyncify.handleSleep((emterpreter_resume) => {
-      nethack.update_status();
-      nethack.get_line({
-        label: (UTF8ToString(quest) || '') + ' ',
-        callback: function(value) {
-          stringToUTF8(value || '', input); // TODO: check length
-          emterpreter_resume();
-        }
+  Web_getlin: async function(quest, input) {
+    return Asyncify.handleAsync(async () => {
+      await new Promise((resolve) => {
+        nethack.update_status();
+        nethack.get_line({
+          label: (UTF8ToString(quest) || '') + ' ',
+          callback: function(value) {
+            writeStringToMemory(value || '', input); // TODO: check length
+            resolve();
+          }
+        });
       });
     });
   },
