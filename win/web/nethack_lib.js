@@ -142,6 +142,24 @@ var LibraryNetHack = {
       });
     },
 
+    virtual_keypress: function(code) {
+      if(nethack.keypress_callback) {
+        nethack.keypress_callback(code);
+      } else {
+        nethack.keybuffer.push(code);
+      }
+    },
+    virtual_selection: function(selection, e) {
+        if (nethack.pending_yn_arg) {
+        var resume_callback = nethack.pending_yn_arg.resume_callback;
+        if (resume_callback) {
+          e.preventDefault();
+          nethack.input_area.classList.remove('in');
+          nethack.pending_yn_arg = null;
+          resume_callback(selection);
+        }
+      }
+    },
     apply_tileset: function(tile_file, tile_width, tile_height) {
       var tile_per_row = 40;
 
@@ -408,10 +426,9 @@ var LibraryNetHack = {
       return win;
     },
 
-    show_menu_window: function(items, title, how, selected_pp, resume_callback) {
+    show_menu_window: function(items, title, how, selected_pp, resume_callback, selections = []) {
       var menu_items = [];
       var save_menu_selection = () => {
-        var selections = [];
         menu_items.forEach(function(item) {
           if(item.classList.contains('active')) {
             var id = parseInt(item.getAttribute('data-identifier'));
@@ -419,7 +436,6 @@ var LibraryNetHack = {
             selections.push(id);
           }
         });
-        console.log(JSON.stringify(selections));
         menu_items = [];
 
         // allocate memory inside emterpreter resume !
@@ -656,6 +672,18 @@ var LibraryNetHack = {
       ele.appendChild(document.createTextNode(parsed.description));
       return ele;
     },
+    add_action: function(actions, key, label,actionFunction) {
+      const idx = actions.length + 1;
+      actions.push({"accelerator": key.charCodeAt(0),
+            "attr": 0,
+            "groupacc": 0,
+            "identifier": idx,
+            "preselected": 0,
+            "str": label,
+            "tile": -1,
+            "action": actionFunction,
+          });
+    },
 
     create_inventory_element: function(item) {
       var ele = document.createElement('span');
@@ -666,11 +694,44 @@ var LibraryNetHack = {
       var tile = document.createElement('span');
       tile.className = 'tile';
       var mouse_event_handler = (e) => {
-          e.preventDefault();
-          nethack.input_area.classList.remove('in');
-          var resume_callback = nethack.pending_yn_arg.resume_callback;
-          nethack.pending_yn_arg = null;
-          resume_callback(item.accelerator);
+          const selected = [];
+          const options = [];
+          nethack.add_action(options, 't', "throw", () => {
+                nethack.virtual_keypress('t'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+          nethack.add_action(options, 'e', "eat", () => {
+                nethack.virtual_keypress('e'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+          nethack.add_action(options, 'z', "zap", () => {
+                nethack.virtual_keypress('z'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+          nethack.add_action(options, 'W', "wear", () => {
+                nethack.virtual_keypress('W'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+          nethack.add_action(options, 'w', "wield", () => {
+                nethack.virtual_keypress('w'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+          nethack.add_action(options, 'P', "put on", () => {
+                nethack.virtual_keypress('P'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+          nethack.add_action(options, 'r', "read", () => {
+                nethack.virtual_keypress('r'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
+        const dummy = 0;
+        const selections = [];
+          nethack.show_menu_window(options, "hey there buddy", nethack.PICK_ONE, dummy, () => {
+            const idx = selections[0] - 1;
+            if (idx < options.length && options[idx]["action"]) {
+              options[idx]["action"]();
+            }
+          }, selections);
       }
       tile.addEventListener('click', mouse_event_handler);
       if(item.tile == -1) {
@@ -887,11 +948,7 @@ var LibraryNetHack = {
           nethack.btn_toggle_zoom.click();
         } else {
           if(e.ctrlKey) return; // should have been processed in keydown
-          if(nethack.keypress_callback) {
-            nethack.keypress_callback(code);
-          } else {
-            nethack.keybuffer.push(code);
-          }
+          nethack.virtual_keypress(code);
         }
       }
     });
@@ -910,11 +967,7 @@ var LibraryNetHack = {
       } else if ((code >= 97) && (code <= 122)) {
         code = code - 96;
       }
-      if(nethack.keypress_callback) {
-        nethack.keypress_callback(code);
-      } else {
-        nethack.keybuffer.push(code);
-      }
+      nethack.virtual_keypress(code);
     });
 
     var mouse_event_handler = function(e) {
@@ -1528,11 +1581,7 @@ var LibraryNetHack = {
             nethack.add_message(nethack.message_win, nethack.ATR_NONE, 'Unknown extended command: ' + value);
           } else {
             nethack.ext_cmd = cmd_idx;
-            if (nethack.keypress_callback) {
-              nethack.keypress_callback('#'.charCodeAt(0));
-            } else {
-              nethack.keybuffer.push('#'.charCodeAt(0));
-            }
+            nethack.virtual_keypress('#'.charCodeAt(0));
           }
         }
       });
