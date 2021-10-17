@@ -151,14 +151,14 @@ GNOMEINC=-I/usr/lib/glib/include -I/usr/lib/gnome-libs/include -I../win/gnome
 # flags for debugging:
 # CFLAGS = -g -I../include
 
-CFLAGS = -O3 -I../include
+CFLAGS = -O3 -I../include 
 LFLAGS = \
 					-O3 \
 					-Oz \
 					--memory-init-file 1 \
 					--js-library ../win/web/nethack_lib.js \
 					--preload-file nethack \
-    			-s ASYNCIFY=1 -lidbfs.js
+    			-s ASYNCIFY=1 -lidbfs.js -gsource-map
 
 # The Qt and Be window systems are written in C++, while the rest of
 # NetHack is standard C.  If using Qt, uncomment the LINK line here to get
