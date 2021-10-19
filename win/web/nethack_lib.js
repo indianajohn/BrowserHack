@@ -763,6 +763,10 @@ var LibraryNetHack = {
                 nethack.virtual_keypress('e'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
+         nethack.add_action(options, 'E', "engrave", () => {
+                nethack.virtual_keypress('E'.charCodeAt(0));
+                nethack.virtual_selection(item.accelerator, e);
+              });
         const dummy = 0;
         const selections = [];
           nethack.show_menu_window(options, "What do you want to do with it?", nethack.PICK_ONE, dummy, () => {
