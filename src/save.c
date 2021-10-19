@@ -371,6 +371,7 @@ dosavebackup()
     if (flags.friday13) {
 	change_luck(-1);
     }
+  vision_recalc(0);
 	return(1);
 }
 
