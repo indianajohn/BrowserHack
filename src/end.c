@@ -921,6 +921,7 @@ die:
 
 	if(done_stopprint) { raw_print(""); raw_print(""); }
 	terminate(EXIT_SUCCESS);
+  (void) delete_savefile();
 }
 
 
