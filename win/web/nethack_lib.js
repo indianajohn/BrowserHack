@@ -710,59 +710,59 @@ var LibraryNetHack = {
             resume_callback(item.accelerator);
             return;
           }
+          if (wand) {
+            nethack.add_action(options, 'z', "zap", () => {
+                  nethack.virtual_keypress('z'.charCodeAt(0));
+                  nethack.virtual_selection(item.accelerator, e);
+                });
+          }
+          if (readable) {
+            nethack.add_action(options, 'r', "read", () => {
+                  nethack.virtual_keypress('r'.charCodeAt(0));
+                  nethack.virtual_selection(item.accelerator, e);
+                });
+          }
+          if (quaffable) {
+            nethack.add_action(options, 'q', "quaff", () => {
+                  nethack.virtual_keypress('q'.charCodeAt(0));
+                  nethack.virtual_selection(item.accelerator, e);
+                });
+          }
+          if (active) {
+            nethack.add_action(options, 'R', "remove", () => {
+                  nethack.virtual_keypress('R'.charCodeAt(0));
+                  nethack.virtual_selection(item.accelerator, e);
+                });
+            nethack.add_action(options, 'T', "take off", () => {
+                  nethack.virtual_keypress('T'.charCodeAt(0));
+                  nethack.virtual_selection(item.accelerator, e);
+                });
+          } else {
+            nethack.add_action(options, 'W', "wear", () => {
+                  nethack.virtual_keypress('W'.charCodeAt(0));
+                  nethack.virtual_selection(item.accelerator, e);
+                });
+            nethack.add_action(options, 'w', "wield", () => {
+                  nethack.virtual_keypress('w'.charCodeAt(0));
+                  nethack.virtual_selection(item.accelerator, e);
+                });
+            nethack.add_action(options, 'P', "put on", () => {
+                  nethack.virtual_keypress('P'.charCodeAt(0));
+                  nethack.virtual_selection(item.accelerator, e);
+                });
+          }
           nethack.add_action(options, 'd', "drop", () => {
                 nethack.virtual_keypress('d'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
-          nethack.add_action(options, 't', "throw", () => {
+         nethack.add_action(options, 't', "throw", () => {
                 nethack.virtual_keypress('t'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
-          nethack.add_action(options, 'e', "eat", () => {
+         nethack.add_action(options, 'e', "eat", () => {
                 nethack.virtual_keypress('e'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
-        if (wand) {
-          nethack.add_action(options, 'z', "zap", () => {
-                nethack.virtual_keypress('z'.charCodeAt(0));
-                nethack.virtual_selection(item.accelerator, e);
-              });
-        }
-        if (readable) {
-          nethack.add_action(options, 'r', "read", () => {
-                nethack.virtual_keypress('r'.charCodeAt(0));
-                nethack.virtual_selection(item.accelerator, e);
-              });
-        }
-        if (quaffable) {
-          nethack.add_action(options, 'q', "quaff", () => {
-                nethack.virtual_keypress('q'.charCodeAt(0));
-                nethack.virtual_selection(item.accelerator, e);
-              });
-        }
-        if (active) {
-          nethack.add_action(options, 'R', "remove", () => {
-                nethack.virtual_keypress('R'.charCodeAt(0));
-                nethack.virtual_selection(item.accelerator, e);
-              });
-          nethack.add_action(options, 'T', "take off", () => {
-                nethack.virtual_keypress('T'.charCodeAt(0));
-                nethack.virtual_selection(item.accelerator, e);
-              });
-        } else {
-          nethack.add_action(options, 'W', "wear", () => {
-                nethack.virtual_keypress('W'.charCodeAt(0));
-                nethack.virtual_selection(item.accelerator, e);
-              });
-          nethack.add_action(options, 'w', "wield", () => {
-                nethack.virtual_keypress('w'.charCodeAt(0));
-                nethack.virtual_selection(item.accelerator, e);
-              });
-          nethack.add_action(options, 'P', "put on", () => {
-                nethack.virtual_keypress('P'.charCodeAt(0));
-                nethack.virtual_selection(item.accelerator, e);
-              });
-        }
         const dummy = 0;
         const selections = [];
           nethack.show_menu_window(options, "What do you want to do with it?", nethack.PICK_ONE, dummy, () => {
