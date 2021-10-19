@@ -806,6 +806,39 @@ var LibraryNetHack = {
         
       return ele;
     },
+    create_tile_function: function(item, mouse_event_handler) {
+      var ele = document.createElement('span');
+      ele.className = 'inventory-item';
+      var tile = document.createElement('span');
+      tile.className = 'tile';
+      tile.addEventListener('click', mouse_event_handler);
+      if(item.tile == -1) {
+        ele.appendChild(tile);
+        ele.classList.add('invisible');
+      } else {
+        tile.className += ' tile' + item.tile.toString(16);
+        ele.appendChild(tile);
+  
+        var acc = document.createElement('div');
+        acc.className = 'inventory-item-accelerator';
+        acc.textContent = String.fromCharCode(item.accelerator);  
+        ele.appendChild(acc);
+      }
+      var parsed = nethack.parse_inventory_description(item.str);
+
+      var des = document.createElement('div');
+      des.className = 'inventory-item-description';
+      des.appendChild(nethack.create_item_description_element(parsed));
+      ele.appendChild(des);
+
+      if(parsed.count > 1) {
+        var cnt = document.createElement('div');
+        cnt.className = 'inventory-item-count';
+        cnt.textContent = parsed.count;
+        ele.appendChild(cnt);
+      }
+      return ele;
+    },
 
     update_inventory_window: function(items) {
       // show inventory window
@@ -824,6 +857,55 @@ var LibraryNetHack = {
           cur_row.appendChild(ele);
         }
       });
+      nethack.inventory_win.appendChild(nethack.create_text_element(nethack.ATR_NONE, "Commands"));
+      cur_row = document.createElement('p');
+      nethack.inventory_win.appendChild(cur_row);
+      //console.log(nethack.tilenames);
+      var i = 0;
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 538,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Kick"
+      },() => {
+        nethack.virtual_keypress(4);
+          }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 532,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Pick up"
+      },() => {
+        nethack.virtual_keypress(','.charCodeAt(0));
+          }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 29,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Search"
+      },() => {
+        nethack.virtual_keypress('s'.charCodeAt(0));
+          }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 525,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Wait"
+      },() => {
+        nethack.virtual_keypress('.'.charCodeAt(0));
+          }));
     },
 
     show_window: function(ele) {
