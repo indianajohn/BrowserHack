@@ -62,8 +62,8 @@ moveloop()
 
     for(;;) {
   if (until_next_autosave == 0) {
-    dosave0();
-    pline("Autosaving");
+    //dosave0();
+    //pline("Autosaving");
     until_next_autosave = 100;
   }
   until_next_autosave--;
