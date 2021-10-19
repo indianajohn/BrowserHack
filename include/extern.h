@@ -1751,6 +1751,7 @@ E int NDECL(dosave);
 E void FDECL(hangup, (int));
 #endif
 E int NDECL(dosave0);
+E int NDECL(dosavebackup);
 #ifdef INSURANCE
 E void NDECL(savestateinlock);
 #endif

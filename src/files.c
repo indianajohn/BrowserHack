@@ -419,6 +419,7 @@ int lev;
 #ifdef VMS
 	Strcat(tf, ";1");
 #endif
+  printf("Level file: %s",file);
 	return;
 }
 
