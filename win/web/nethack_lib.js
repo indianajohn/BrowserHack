@@ -701,8 +701,15 @@ var LibraryNetHack = {
       var tile = document.createElement('span');
       tile.className = 'tile';
       var mouse_event_handler = (e) => {
-          const selected = [];
           const options = [];
+          if (nethack.pending_yn_arg) {
+            e.preventDefault();
+            nethack.input_area.classList.remove('in');
+            var resume_callback = nethack.pending_yn_arg.resume_callback;
+            nethack.pending_yn_arg = null;
+            resume_callback(item.accelerator);
+            return;
+          }
           nethack.add_action(options, 'd', "drop", () => {
                 nethack.virtual_keypress('d'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
