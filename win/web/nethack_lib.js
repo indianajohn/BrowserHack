@@ -1678,31 +1678,7 @@ var LibraryNetHack = {
       ques_ele.textContent = ques;
       nethack.input_area.appendChild(ques_ele);
 
-      if (choices == 'ynq') {
-        const options = [];
-        options.push({"accelerator": 'y'.charCodeAt(0),
-              "attr": 0,
-              "groupacc": 0,
-              "identifier": 1,
-              "preselected": 0,
-              "str": "yes",
-              "tile": -1,
-            });
-        options.push({"accelerator": 'n'.charCodeAt(0),
-              "attr": 0,
-              "groupacc": 0,
-              "identifier": 1,
-              "preselected": 0,
-              "str": "n",
-              "tile": -1,
-            });
-        const dummy = 0;
-        const selections = [];
-        nethack.show_menu_window(options, ques, nethack.PICK_ONE, dummy, () => {
-          const idx = selections[0] - 1;
-          nethack.virtual_keypress(options[idx]["str"].charCodeAt(0));
-        }, selections);
-    } else if(choices != '') {
+      if(choices != '') {
         if(def.charCodeAt(0)) {
           var idx = choices.indexOf(def);
           if(idx == -1) {
@@ -1739,6 +1715,40 @@ var LibraryNetHack = {
         def: def,
         resume_callback: emterpreter_resume
       };
+      if (choices == 'ynq') {
+        const options = [];
+        options.push({"accelerator": 'y'.charCodeAt(0),
+          "attr": 0,
+          "groupacc": 0,
+          "identifier": 1,
+          "preselected": 0,
+          "str": "yes",
+          "tile": -1,
+        });
+        options.push({"accelerator": 'n'.charCodeAt(0),
+          "attr": 0,
+          "groupacc": 0,
+          "identifier": 1,
+          "preselected": 0,
+          "str": "no",
+          "tile": -1,
+        });
+        options.push({"accelerator": 'q'.charCodeAt(0),
+          "attr": 0,
+          "groupacc": 0,
+          "identifier": 1,
+          "preselected": 0,
+          "str": "quit", "tile": -1,
+        });
+        const dummy = 0;
+        const selections = [];
+        nethack.show_menu_window(options, ques, nethack.PICK_ONE, dummy, () => {
+          if (nethack.pending_yn_arg) {
+            const idx = selections[0] - 1;
+            nethack.pending_yn_arg.resume_callback(options[idx]["str"].charCodeAt(0));
+          }
+        }, selections);
+      } 
     });
   },
 
