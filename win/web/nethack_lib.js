@@ -771,8 +771,8 @@ var LibraryNetHack = {
                 nethack.virtual_keypress('a'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
-         nethack.add_action(options, 'z', "cast", () => {
-                nethack.virtual_keypress('z'.charCodeAt(0));
+         nethack.add_action(options, 'Z', "cast", () => {
+                nethack.virtual_keypress('Z'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
         const dummy = 0;
