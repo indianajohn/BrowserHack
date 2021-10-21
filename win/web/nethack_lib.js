@@ -906,6 +906,18 @@ var LibraryNetHack = {
       },() => {
         nethack.virtual_keypress('.'.charCodeAt(0));
           }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 393,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Extended commands"
+      },() => {
+        nethack.ext_cmd = -2;
+        nethack.virtual_keypress('#'.charCodeAt(0));
+          }));
     },
 
     show_window: function(ele) {
@@ -1755,7 +1767,36 @@ var LibraryNetHack = {
           }
         }
       });
-    } 
+    } else if (nethack.ext_cmd == -2) {
+      nethack.update_status();
+      var ext_cmd_list = [];
+      for(var i = 0; i < command_count; ++i) 
+        ext_cmd_list.push(UTF8ToString({{{ makeGetValue('commands', 'i*4', 'i32'); }}}));
+
+      const options = [];
+      let idx = 0;
+      for (const cmd of ext_cmd_list) {
+        idx++;
+        const char_code  = 'a'.charCodeAt(0) + idx - 1;
+        options.push({"accelerator": char_code,
+              "attr": 0,
+              "groupacc": 0,
+              "identifier": idx,
+              "preselected": 0,
+              "str": cmd,
+              "tile": -1,
+            });
+        }
+        const dummy = 0;
+        const selections = [];
+        nethack.show_menu_window(options, "Extended commands:", nethack.PICK_ONE, dummy, () => {
+          const idx = selections[0] - 1;
+          if (idx < options.length && options[idx]["str"]) {
+            nethack.ext_cmd = idx;
+            nethack.virtual_keypress('#'.charCodeAt(0));
+          }
+        }, selections);
+    }
     const result = nethack.ext_cmd;
     nethack.ext_cmd = -1;
     return result;
