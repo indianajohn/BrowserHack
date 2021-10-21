@@ -933,6 +933,30 @@ var LibraryNetHack = {
         nethack.ext_cmd = -2;
         nethack.virtual_keypress('#'.charCodeAt(0));
           }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 851,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Go/peform action up"
+      },() => {
+        nethack.ext_cmd = -2;
+        nethack.virtual_keypress('<'.charCodeAt(0));
+          }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 852,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Go/perform action down"
+      },() => {
+        nethack.ext_cmd = -2;
+        nethack.virtual_keypress('>'.charCodeAt(0));
+          }));
     },
 
     show_window: function(ele) {
@@ -1730,7 +1754,7 @@ var LibraryNetHack = {
         def: def,
         resume_callback: emterpreter_resume
       };
-      if (choices == 'ynq') {
+      if (choices == 'ynq' || choices == 'yn') {
         const options = [];
         options.push({"accelerator": 'y'.charCodeAt(0),
           "attr": 0,
@@ -1743,24 +1767,27 @@ var LibraryNetHack = {
         options.push({"accelerator": 'n'.charCodeAt(0),
           "attr": 0,
           "groupacc": 0,
-          "identifier": 1,
+          "identifier": 2,
           "preselected": 0,
           "str": "no",
           "tile": -1,
         });
-        options.push({"accelerator": 'q'.charCodeAt(0),
-          "attr": 0,
-          "groupacc": 0,
-          "identifier": 1,
-          "preselected": 0,
-          "str": "quit", "tile": -1,
-        });
+        if (choices == 'ynq') {
+          options.push({"accelerator": 'q'.charCodeAt(0),
+            "attr": 0,
+            "groupacc": 0,
+            "identifier": 3,
+            "preselected": 0,
+            "str": "quit", "tile": -1,
+          });
+        }
         const dummy = 0;
         const selections = [];
         nethack.show_menu_window(options, ques, nethack.PICK_ONE, dummy, () => {
           if (nethack.pending_yn_arg) {
             const idx = selections[0] - 1;
-            nethack.pending_yn_arg.resume_callback(options[idx]["str"].charCodeAt(0));
+            nethack.virtual_selection(options[idx]["accelerator"]);
+
           }
         }, selections);
       } 
