@@ -771,10 +771,6 @@ var LibraryNetHack = {
                 nethack.virtual_keypress('a'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
-         nethack.add_action(options, 'Z', "cast", () => {
-                nethack.virtual_keypress('Z'.charCodeAt(0));
-                nethack.virtual_selection(item.accelerator, e);
-              });
         const dummy = 0;
         const selections = [];
           nethack.show_menu_window(options, "What do you want to do with it?", nethack.PICK_ONE, dummy, () => {
@@ -913,6 +909,17 @@ var LibraryNetHack = {
         "str": "Wait"
       },() => {
         nethack.virtual_keypress('.'.charCodeAt(0));
+          }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 724,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Cast a spell"
+      },() => {
+        nethack.virtual_keypress('Z'.charCodeAt(0));
           }));
       cur_row.append(nethack.create_tile_function({
         "accelerator": ++i,
