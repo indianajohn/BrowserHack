@@ -356,6 +356,13 @@ boolean taken;
 	char	qbuf[QBUFSZ];
 	boolean ask;
 
+  // Remove backup
+  char backup_file[50];
+  backup_file_name(backup_file);
+  if(access(backup_file, F_OK) == 0 ) {
+    remove(backup_file);
+  }
+
 	if (invent) {
 	    if(taken)
 		Sprintf(qbuf,"Do you want to see what you had when you %s?",
@@ -921,7 +928,7 @@ die:
 
 	if(done_stopprint) { raw_print(""); raw_print(""); }
 	terminate(EXIT_SUCCESS);
-  (void) delete_savefile();
+  //(void) delete_savefile();
 }
 
 

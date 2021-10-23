@@ -236,15 +236,24 @@ char *argv[];
 
 	display_gamewindows();
 
-	if ((fd = restore_saved_game()) >= 0) {
+  int restored = (fd = restore_saved_game());
+  const char *fq_save = fqname(SAVEF, SAVEPREFIX, 1);
+  char backup_file[50];
+  char save_file[50];
+  backup_file_name(backup_file);
+  strcpy(save_file, "/nethack/");
+  strcat(save_file, fq_save);
+  if(access(backup_file, F_OK) == 0 ) {
+    int result = cp(save_file, backup_file);
+  }
+  restored = (fd = restore_saved_game());
+	if (restored >= 0) {
 #ifdef WIZARD
 		/* Since wizard is actually flags.debug, restoring might
 		 * overwrite it.
 		 */
 		boolean remember_wiz_mode = wizard;
 #endif
-		const char *fq_save = fqname(SAVEF, SAVEPREFIX, 1);
-
 		(void) chmod(fq_save,0);	/* disallow parallel restores */
 		(void) signal(SIGINT, (SIG_RET_TYPE) done1);
 #ifdef NEWS

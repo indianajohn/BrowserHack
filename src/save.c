@@ -277,104 +277,6 @@ dosave0()
 	return(1);
 }
 
-/* returns 1 if save successful */
-int
-dosavebackup()
-{
-	const char *fq_save;
-	register int fd, ofd;
-	xchar ltmp;
-	d_level uz_save;
-	char whynot[BUFSZ];
-
-	if (!SAVEF[0])
-		return 0;
-	fq_save = fqname(SAVEF, SAVEPREFIX, 1);	/* level files take 0 */
-
-	fd = create_savefile();
-	if(fd < 0) {
-		HUP pline("Cannot open save file.");
-		(void) delete_savefile();	/* ab@unido */
-		return(0);
-	}
-
-	vision_recalc(2);	/* shut down vision to prevent problems
-				   in the event of an impossible() call */
-
-	/* undo date-dependent luck adjustments made at startup time */
-	if(flags.moonphase == FULL_MOON)	/* ut-sally!fletcher */
-		change_luck(-1);		/* and unido!ab */
-	if(flags.friday13)
-		change_luck(1);
-	if(iflags.window_inited)
-	    HUP clear_nhwindow(WIN_MESSAGE);
-
-	store_version(fd);
-#ifdef STORE_PLNAME_IN_FILE
-	bwrite(fd, (genericptr_t) plname, PL_NSIZ);
-#endif
-	ustuck_id = (u.ustuck ? u.ustuck->m_id : 0);
-#ifdef STEED
-	usteed_id = (u.usteed ? u.usteed->m_id : 0);
-#endif
-	savelev(fd, ledger_no(&u.uz), WRITE_SAVE);
-	savegamestate(fd, WRITE_SAVE);
-
-	/* While copying level files around, zero out u.uz to keep
-	 * parts of the restore code from completely initializing all
-	 * in-core data structures, since all we're doing is copying.
-	 * This also avoids at least one nasty core dump.
-	 */
-	uz_save = u.uz;
-	u.uz.dnum = u.uz.dlevel = 0;
-	/* these pointers are no longer valid, and at least u.usteed
-	 * may mislead place_monster() on other levels
-	 */
-	u.ustuck = (struct monst *)0;
-#ifdef STEED
-	u.usteed = (struct monst *)0;
-#endif
-
-	for(ltmp = (xchar)1; ltmp <= maxledgerno(); ltmp++) {
-		if (ltmp == ledger_no(&uz_save)) continue;
-		if (!(level_info[ltmp].flags & LFILE_EXISTS)) continue;
-		ofd = open_levelfile(ltmp, whynot);
-		if (ofd < 0) {
-		    HUP pline("%s", whynot);
-		    (void) close(fd);
-		    (void) delete_savefile();
-		    HUP killer = whynot;
-		    HUP done(TRICKED);
-		    return(0);
-		}
-		minit();	/* ZEROCOMP */
-		getlev(ofd, hackpid, ltmp, FALSE);
-		(void) close(ofd);
-		bwrite(fd, (genericptr_t) &ltmp, sizeof ltmp); /* level number*/
-		savelev(fd, ltmp, WRITE_SAVE);     /* actual level*/
-		delete_levelfile(ltmp);
-	}
-	bclose(fd);
-
-	u.uz = uz_save;
-
-	delete_levelfile(0);
-	compress(fq_save);
-#ifdef WEB_GRAPHICS
-    /* need manual sync for emscripten */
-    EM_ASM( FS.syncfs(function (err) { if(err) console.log('Cannot sync FS, savegame may not work!'); }););
-#endif
-
-    // Redo luck changes
-    if(flags.moonphase == FULL_MOON) {
-    }
-    if (flags.friday13) {
-	change_luck(-1);
-    }
-  vision_recalc(0);
-	return(1);
-}
-
 STATIC_OVL void
 savegamestate(fd, mode)
 register int fd, mode;
@@ -432,6 +334,7 @@ register int fd, mode;
 void
 savestateinlock()
 {
+  return;
 	int fd, hpid;
 	static boolean havestate = TRUE;
 	char whynot[BUFSZ];

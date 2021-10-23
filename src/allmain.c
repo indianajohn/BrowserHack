@@ -9,12 +9,18 @@
 #ifndef NO_SIGNAL
 #include <signal.h>
 #endif
+#include <fcntl.h>
+#include <unistd.h>
+#include <errno.h>
 
 #ifdef POSITIONBAR
 STATIC_DCL void NDECL(do_positionbar);
 #endif
 
 #ifdef OVL0
+#ifdef WEB_GRAPHICS
+#include <emscripten.h>
+#endif
 
 void
 moveloop()
@@ -58,12 +64,31 @@ moveloop()
 
     u.uz0.dlevel = u.uz.dlevel;
     youmonst.movement = NORMAL_SPEED;	/* give the hero some movement points */
-    int until_next_autosave = 0;
+    int until_next_autosave = 2;
 
     for(;;) {
   if (until_next_autosave == 0) {
-    dosavebackup();
+    dosave0();
     pline("Autosaving");
+		const char *fq_save = fqname(SAVEF, SAVEPREFIX, 1);
+    char backup_file[50];
+    backup_file_name(backup_file);
+    char from_file[50];
+    strcpy(from_file, "/nethack/");
+    strcat(from_file, fq_save);
+    if(access(backup_file, F_OK) == 0 ) {
+      remove(backup_file);
+    }
+    int result = cp(backup_file, from_file);
+#ifdef WEB_GRAPHICS
+    /* need manual sync for emscripten */
+    EM_ASM( FS.syncfs(function (err) { if(err) console.log('Cannot sync FS, savegame may not work!'); }););
+#endif
+    register int fd;
+    if ((fd = restore_saved_game()) >= 0) {
+      if(!dorecover(fd)) {
+      }
+    }
     until_next_autosave = 100;
   }
   until_next_autosave--;

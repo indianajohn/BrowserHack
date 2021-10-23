@@ -608,6 +608,8 @@ E void NDECL(makerogueghost);
 E char *FDECL(fname_encode, (const char *, CHAR_P, char *, char *, int));
 E char *FDECL(fname_decode, (CHAR_P, char *, char *, int));
 E const char *FDECL(fqname, (const char *, int, int));
+E void FDECL(backup_file_name, (char *));
+E int FDECL(cp, (const char *, const char *));
 E FILE *FDECL(fopen_datafile, (const char *,const char *,int));
 E boolean FDECL(uptodate, (int,const char *));
 E void FDECL(store_version, (int));
@@ -1751,7 +1753,6 @@ E int NDECL(dosave);
 E void FDECL(hangup, (int));
 #endif
 E int NDECL(dosave0);
-E int NDECL(dosavebackup);
 #ifdef INSURANCE
 E void NDECL(savestateinlock);
 #endif
