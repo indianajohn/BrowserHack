@@ -1280,7 +1280,7 @@ var LibraryNetHack = {
       startPos = [e.screenX, e.screenY];
     };
     const totalWheelDelta = [0, 0];
-    document.addEventListener('wheel', (e) => { 
+    const moveHandler = (e) => { 
       e.preventDefault();
       totalWheelDelta[0] += e.deltaX;
       totalWheelDelta[1] += e.deltaY;
@@ -1296,7 +1296,9 @@ var LibraryNetHack = {
         totalWheelDelta[1] = 0;
       }
       nethack.recenter_map();
-    }, {passive: false});
+    };
+    document.addEventListener('wheel', moveHandler, {passive: false});
+    document.addEventListener('touchmove', moveHandler, {passive: false});
     nethack.map_win.addEventListener('pointerdown', handlePointerDown);
     const handlePointerUp = (e) => {
       startPos = undefined;
