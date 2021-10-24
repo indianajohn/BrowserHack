@@ -956,7 +956,6 @@ var LibraryNetHack = {
         "preselected": 0,
         "str": "Go/peform action up"
       },() => {
-        nethack.ext_cmd = -2;
         nethack.virtual_keypress('<'.charCodeAt(0));
           }));
       cur_row.append(nethack.create_tile_function({
@@ -968,8 +967,37 @@ var LibraryNetHack = {
         "preselected": 0,
         "str": "Go/perform action down"
       },() => {
-        nethack.ext_cmd = -2;
         nethack.virtual_keypress('>'.charCodeAt(0));
+          }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 845,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Save & quit"
+      },() => {
+        nethack.virtual_keypress('S'.charCodeAt(0));
+          }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 966,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Cancel"
+      },() => {
+        if (nethack.pending_yn_arg) {
+          if (nethack.pending_yn_arg) {
+            const resume = nethack.pending_yn_arg.resume_callback;
+            const default_option = nethack.pending_yn_arg.def;
+            nethack.pending_yn_arg = undefined;
+            nethack.input_area.classList.remove('in');
+            resume(default_option);
+          }
+        }
           }));
     },
 
