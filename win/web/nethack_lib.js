@@ -937,6 +937,17 @@ var LibraryNetHack = {
           }));
       cur_row.append(nethack.create_tile_function({
         "accelerator": ++i,
+        "tile": 786,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Pay"
+      },() => {
+        nethack.virtual_keypress('p'.charCodeAt(0));
+          }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
         "tile": 393,
         "attr": 0,
         "groupacc": 0,
