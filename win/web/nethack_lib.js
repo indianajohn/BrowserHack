@@ -787,7 +787,7 @@ var LibraryNetHack = {
               });
         const dummy = 0;
         const selections = [];
-          nethack.show_menu_window(options, "What do you want to do with it?", nethack.PICK_ONE, dummy, () => {
+          nethack.show_menu_window(options, `${item.str}?`, nethack.PICK_ONE, dummy, () => {
             const idx = selections[0] - 1;
             if (idx < options.length && options[idx]["action"]) {
               options[idx]["action"]();
