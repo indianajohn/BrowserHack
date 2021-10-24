@@ -982,7 +982,7 @@ var LibraryNetHack = {
           }));
       cur_row.append(nethack.create_tile_function({
         "accelerator": ++i,
-        "tile": 966,
+        "tile": 896,
         "attr": 0,
         "groupacc": 0,
         "identifier": 101,
