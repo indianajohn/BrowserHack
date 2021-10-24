@@ -1273,8 +1273,33 @@ var LibraryNetHack = {
       }
     };
 
+    let startPos = undefined;
     nethack.map_win.addEventListener('click', mouse_event_handler);
     nethack.map_win.addEventListener('dblclick', mouse_event_handler);
+    const handlePointerDown = (e) => {
+      startPos = [e.screenX, e.screenY];
+    };
+    nethack.map_win.addEventListener('pointerdown', handlePointerDown);
+    const handlePointerUp = (e) => {
+      startPos = undefined;
+    };
+    nethack.map_win.addEventListener('pointerup', handlePointerUp);
+    const handlePointerMove = (e) => {
+      if (startPos) {
+        const deltaX = Math.round((startPos[0] - e.screenX) * 30 / window.innerWidth);
+        const deltaY = Math.round((startPos[1] - e.screenY) * 30 / window.innerHeight);
+        if (Math.abs(deltaX) > 0) {
+          nethack.map_center_x += deltaX;
+          startPos[0] = e.screenX;
+        }
+        if (Math.abs(deltaY) > 0) {
+          nethack.map_center_y += deltaY;
+          startPos[1] = e.screenY;
+        }
+        nethack.recenter_map();
+      }
+    };
+    nethack.map_win.addEventListener('pointermove',handlePointerMove, true);
 
     // magic
     // tilenames is loaded in pre_run
