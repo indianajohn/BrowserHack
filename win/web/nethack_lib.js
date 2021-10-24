@@ -781,6 +781,10 @@ var LibraryNetHack = {
                 nethack.queued_yn_responses = ["n",item.accelerator];
                 nethack.virtual_ext_cmd('name');
               });
+         nethack.add_action(options, 'N', "name object", () => {
+                nethack.queued_yn_responses = ["y",item.accelerator];
+                nethack.virtual_ext_cmd('name');
+              });
         const dummy = 0;
         const selections = [];
           nethack.show_menu_window(options, "What do you want to do with it?", nethack.PICK_ONE, dummy, () => {
