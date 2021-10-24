@@ -1279,6 +1279,24 @@ var LibraryNetHack = {
     const handlePointerDown = (e) => {
       startPos = [e.screenX, e.screenY];
     };
+    const totalWheelDelta = [0, 0];
+    document.addEventListener('wheel', (e) => { 
+      e.preventDefault();
+      totalWheelDelta[0] += e.deltaX;
+      totalWheelDelta[1] += e.deltaY;
+      const minChange = 10;
+      if (Math.abs(totalWheelDelta[0]) > minChange) {
+        const change = Math.round(totalWheelDelta[0] / minChange);
+        nethack.map_center_x += change;
+        totalWheelDelta[0] = 0;
+      }
+      if (Math.abs(totalWheelDelta[1]) > minChange) {
+        const change = Math.round(totalWheelDelta[1] / minChange);
+        nethack.map_center_y += change;
+        totalWheelDelta[1] = 0;
+      }
+      nethack.recenter_map();
+    }, {passive: false});
     nethack.map_win.addEventListener('pointerdown', handlePointerDown);
     const handlePointerUp = (e) => {
       startPos = undefined;
