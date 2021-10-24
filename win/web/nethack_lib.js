@@ -149,7 +149,13 @@ var LibraryNetHack = {
         nethack.keybuffer.push(code);
       }
     },
+    virtual_ext_cmd: function(name) {
+        nethack.ext_cmd_str = name;
+        nethack.ext_cmd = -1;
+        nethack.virtual_keypress('#'.charCodeAt(0));
+    },
     virtual_selection: function(selection, e) {
+      console.log(`Selecting ${selection}`);
         if (nethack.pending_yn_arg) {
         var resume_callback = nethack.pending_yn_arg.resume_callback;
         if (resume_callback) {
@@ -771,6 +777,10 @@ var LibraryNetHack = {
                 nethack.virtual_keypress('a'.charCodeAt(0));
                 nethack.virtual_selection(item.accelerator, e);
               });
+         nethack.add_action(options, 'n', "name type", () => {
+                nethack.queued_yn_responses = ["n",item.accelerator];
+                nethack.virtual_ext_cmd('name');
+              });
         const dummy = 0;
         const selections = [];
           nethack.show_menu_window(options, "What do you want to do with it?", nethack.PICK_ONE, dummy, () => {
@@ -1045,6 +1055,8 @@ var LibraryNetHack = {
     nethack.keybuffer = [];
     nethack.mousebuffer = [];
     nethack.ext_cmd = -1;
+    nethack.ext_cmd_str = undefined;
+    nethack.queued_yn_responses = [];
     nethack.window_pending = 0;
 
     // commonly used elements
@@ -1701,6 +1713,10 @@ var LibraryNetHack = {
   },
 
   Web_yn_function_helper: function(ques, choices, def) {
+    if (nethack.queued_yn_responses.length > 0) {
+      const result = nethack.queued_yn_responses.shift();
+      return result;
+    }
     return Asyncify.handleSleep((emterpreter_resume) => {
       nethack.update_status();
       ques = UTF8ToString(ques);
@@ -1828,6 +1844,13 @@ var LibraryNetHack = {
       var ext_cmd_list = [];
       for(var i = 0; i < command_count; ++i) 
         ext_cmd_list.push(UTF8ToString({{{ makeGetValue('commands', 'i*4', 'i32'); }}}));
+
+      if (nethack.ext_cmd_str) {
+        var cmd_idx = ext_cmd_list.indexOf(nethack.ext_cmd_str);
+        nethack.ext_cmd_str = undefined;
+        nethack.ext_cmd = -1;
+        return cmd_idx;
+      }
 
       nethack.get_line({
         label: '#',
