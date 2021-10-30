@@ -1010,6 +1010,17 @@ var LibraryNetHack = {
           }
         }
           }));
+      cur_row.append(nethack.create_tile_function({
+        "accelerator": ++i,
+        "tile": 660,
+        "attr": 0,
+        "groupacc": 0,
+        "identifier": 101,
+        "preselected": 0,
+        "str": "Eat"
+      },() => {
+        nethack.virtual_keypress('e'.charCodeAt(0));
+          }));
     },
 
     show_window: function(ele) {
