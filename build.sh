@@ -25,9 +25,9 @@ make install CC=$EMCC PREFIX=$MYDIR/build
 # then remove it
 rm -rf $MYDIR/src/nethack
 # and copy the nethack directory in place so it can be bundled.
-rm -rf $MYDIR/src/nethack
 cp -rf $MYDIR/build/nethack $MYDIR/src/nethack
 # and build again with everything bundled
+sh $MYDIR/sys/unix/setup.sh
 make CC=$EMCC -j$JOBS
 }
 
