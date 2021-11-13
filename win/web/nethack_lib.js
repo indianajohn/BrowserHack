@@ -1275,6 +1275,86 @@ var LibraryNetHack = {
           return;
         }
       }
+
+      // Special behavior for certain tiles
+      const handleTileSelection = (tile_idx, direction, e) => {
+        console.log('handle tile selection');
+        const options = [];
+        // open door
+        if (tile_idx == 842 || tile_idx == 843) {
+        nethack.add_action(options, 'c', "close", () => {
+              nethack.virtual_keypress('c'.charCodeAt(0));
+              nethack.virtual_selection(direction.charCodeAt(0));
+            });
+        nethack.add_action(options, 'm', "move", () => {
+              nethack.virtual_keypress(direction.charCodeAt(0), e);
+            });
+        } else if (tile_idx == 844 || tile_idx == 845) {
+        nethack.add_action(options, 'o', "open", () => {
+              nethack.virtual_keypress('o'.charCodeAt(0), e);
+              nethack.virtual_selection(direction.charCodeAt(0));
+            });
+        nethack.add_action(options, 'k', "kick", () => {
+              nethack.virtual_keypress(4);
+              nethack.virtual_selection(direction.charCodeAt(0));
+            });
+        } else {
+          return false;
+        }
+        const dummy = 0;
+        const selections = [];
+        nethack.show_menu_window(options, `A door:`, nethack.PICK_ONE, dummy, () => {
+          const idx = selections[0] - 1;
+          if (idx < options.length && options[idx]["action"]) {
+            options[idx]["action"]();
+          }
+        }, selections);
+        return true;
+
+      }
+      // Cardinal directions
+      const tile_idx = nethack.maptiles[x][y]['tile_idx'];
+      if (x == nethack.map_center_x - 1 && y == nethack.map_center_y) {
+        if (handleTileSelection(tile_idx, 'h', e)) {
+          return;
+        }
+      }
+      if (x == nethack.map_center_x + 1 && y == nethack.map_center_y) {
+        if (handleTileSelection(tile_idx, 'l', e)) {
+          return;
+        }
+      }
+      if (x == nethack.map_center_x && y == nethack.map_center_y - 1) {
+        if (handleTileSelection(tile_idx, 'k', e)) {
+          return;
+        }
+      }
+      if (x == nethack.map_center_x && y == nethack.map_center_y + 1) {
+        if (handleTileSelection(tile_idx, 'j', e)) {
+          return;
+        }
+      }
+      // Diagonals
+      if (x == nethack.map_center_x + 1 && y == nethack.map_center_y + 1) {
+        if (handleTileSelection(tile_idx, 'n', e)) {
+          return;
+        }
+      }
+      if (x == nethack.map_center_x + 1 && y == nethack.map_center_y - 1) {
+        if (handleTileSelection(tile_idx, 'u', e)) {
+          return;
+        }
+      }
+      if (x == nethack.map_center_x - 1 && y == nethack.map_center_y + 1) {
+        if (handleTileSelection(tile_idx, 'b', e)) {
+          return;
+        }
+      }
+      if (x == nethack.map_center_x - 1 && y == nethack.map_center_y - 1) {
+        if (handleTileSelection(tile_idx, 'y', e)) {
+          return;
+        }
+      }
       e.preventDefault();
 
       if(nethack.mouseclick_callback) {
@@ -1740,6 +1820,7 @@ var LibraryNetHack = {
       nethack.maptiles[x][y] = e;
     }
     var tile_ele = nethack.maptiles[x][y];
+    tile_ele['tile_idx'] = tile;
     tile_ele.className = 'tile tile' + tile.toString(16);
     tile_ele.innerHTML = '';
     if(is_pet) {
