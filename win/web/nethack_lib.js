@@ -112,7 +112,6 @@ var LibraryNetHack = {
       .then(response => response.json())
       .then(data => {
         nethack.tilenames = data;
-        console.log(data);
       });
 
       // show warning on exit
@@ -704,7 +703,6 @@ var LibraryNetHack = {
       const wearable = item.tile >= 465 && item.tile <= 545;
       const wieldable = (item.tile >= 396 && item.tile <= 464) || item.tile == 630 || item.tile == 632;
       const puttable = item.file >= 547 && item.tile <= 584;
-      console.log(`item=${JSON.stringify(item)}, wand=${wand}, quaffable=${quaffable}, readable=${readable}, wieldable=${wieldable}, puttable=${puttable}, weable=${wearable}`);
       if (active) {
         ele.className += ' active'
       }
@@ -899,7 +897,6 @@ var LibraryNetHack = {
       nethack.inventory_win.appendChild(nethack.create_text_element(nethack.ATR_NONE, "Commands"));
       cur_row = document.createElement('p');
       nethack.inventory_win.appendChild(cur_row);
-      //console.log(nethack.tilenames);
       var i = 0;
       cur_row.append(nethack.create_tile_function({
         "accelerator": ++i,
@@ -1299,7 +1296,6 @@ var LibraryNetHack = {
 
       // Special behavior for certain tiles
       const handleTileSelection = (tile_idx, direction, e) => {
-        console.log('handle tile selection');
         const options = [];
         // open door
         if (tile_idx == 842 || tile_idx == 843) {
