@@ -1,3 +1,19 @@
+# Building
+Install a WASM compiler. Tested with emsdk 2.0.31.
+```
+mkdir -p ~/dev
+cd ~/dev
+git clone https://github.com/emscripten-core/emsdk.git
+~/dev/emsdk/emsdk install 2.0.31
+~/dev/emsdk/emsdk activate 2.0.31
+source ~/dev/emsdk/emsdk_env.sh
+```
+
+Build the project.
+```
+./build.sh
+```
+
 # BrowserHack
 
 NetHack ported to the Web by Lu Wang
